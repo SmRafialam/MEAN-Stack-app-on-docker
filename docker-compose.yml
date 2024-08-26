@@ -1,21 +1,27 @@
 version: '3'
 services:
-  backend:
-    build: ./backend
+  mongodb:
+    image: mongo
+    container_name: mongodb
     ports:
-      - "3000:3000"
-    networks:
-      - app-network
+      - "27017:27017"
+    volumes:
+      - ./data:/data/db
+
+  backend:
+    build: ./simple-blog-api  # Ensure this path points to your backend directory
+    container_name: simple-blog-api
+    ports:
+      - "5000:5000"
     depends_on:
-      - frontend
+      - mongodb
+    environment:
+      MONGODB_URL: mongodb+srv://smrafialam007:blogAPI@cluster0.exfov.mongodb.net/
 
   frontend:
-    build: ./frontend
+    build: ./simple-blog-front  # Ensure this path points to your frontend directory
+    container_name: simple-blog-front
     ports:
-      - "4200:80"
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
+      - "80:80"
+    depends_on:
+      - backend
